@@ -7,8 +7,15 @@ import ModalAddFood from '../../components/ModalAddFood';
 import ModalEditFood from '../../components/ModalEditFood';
 import { FoodsContainer } from './styles';
 
-class Dashboard extends Component {
-  constructor(props) {
+interface food  {
+  foods: [],
+  editingFood: {},
+  modalOpen: boolean,
+  editModalOpen: boolean,
+}
+
+class Dashboard extends Component<any, any> {
+  constructor(props: any) {
     super(props);
     this.state = {
       foods: [],
@@ -24,7 +31,7 @@ class Dashboard extends Component {
     this.setState({ foods: response.data });
   }
 
-  handleAddFood = async food => {
+  handleAddFood = async (food: any) => {
     const { foods } = this.state;
 
     try {
@@ -39,7 +46,7 @@ class Dashboard extends Component {
     }
   }
 
-  handleUpdateFood = async food => {
+  handleUpdateFood = async (food: any) => {
     const { foods, editingFood } = this.state;
 
     try {
@@ -48,7 +55,7 @@ class Dashboard extends Component {
         { ...editingFood, ...food },
       );
 
-      const foodsUpdated = foods.map(f =>
+      const foodsUpdated = foods.map((f: any) =>
         f.id !== foodUpdated.data.id ? f : foodUpdated.data,
       );
 
@@ -58,12 +65,12 @@ class Dashboard extends Component {
     }
   }
 
-  handleDeleteFood = async id => {
+  handleDeleteFood = async (id: number) => {
     const { foods } = this.state;
 
     await api.delete(`/foods/${id}`);
 
-    const foodsFiltered = foods.filter(food => food.id !== id);
+    const foodsFiltered = foods.filter((food: any) => food.id !== id);
 
     this.setState({ foods: foodsFiltered });
   }
@@ -80,7 +87,7 @@ class Dashboard extends Component {
     this.setState({ editModalOpen: !editModalOpen });
   }
 
-  handleEditFood = food => {
+  handleEditFood = (food: any) => {
     this.setState({ editingFood: food, editModalOpen: true });
   }
 
@@ -104,7 +111,7 @@ class Dashboard extends Component {
 
         <FoodsContainer data-testid="foods-list">
           {foods &&
-            foods.map(food => (
+            foods.map((food:any) => (
               <Food
                 key={food.id}
                 food={food}
