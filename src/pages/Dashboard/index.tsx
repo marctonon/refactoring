@@ -7,12 +7,14 @@ import ModalAddFood from '../../components/ModalAddFood';
 import ModalEditFood from '../../components/ModalEditFood';
 import { FoodsContainer } from './styles';
 
-interface food  {
-  foods: [],
-  editingFood: {},
-  modalOpen: boolean,
-  editModalOpen: boolean,
-}
+type FoodType = {
+  id?: number,
+  name: string,
+  description: string,
+  price: number,
+  available: boolean,
+  image: string
+  }
 
 class Dashboard extends Component<any, any> {
   constructor(props: any) {
@@ -31,7 +33,7 @@ class Dashboard extends Component<any, any> {
     this.setState({ foods: response.data });
   }
 
-  handleAddFood = async (food: any) => {
+  handleAddFood = async (food: FoodType) => {
     const { foods } = this.state;
 
     try {
@@ -46,7 +48,7 @@ class Dashboard extends Component<any, any> {
     }
   }
 
-  handleUpdateFood = async (food: any) => {
+  handleUpdateFood = async (food: FoodType) => {
     const { foods, editingFood } = this.state;
 
     try {
@@ -55,7 +57,7 @@ class Dashboard extends Component<any, any> {
         { ...editingFood, ...food },
       );
 
-      const foodsUpdated = foods.map((f: any) =>
+      const foodsUpdated = foods.map((f: FoodType) =>
         f.id !== foodUpdated.data.id ? f : foodUpdated.data,
       );
 
@@ -70,7 +72,7 @@ class Dashboard extends Component<any, any> {
 
     await api.delete(`/foods/${id}`);
 
-    const foodsFiltered = foods.filter((food: any) => food.id !== id);
+    const foodsFiltered = foods.filter((food: FoodType) => food.id !== id);
 
     this.setState({ foods: foodsFiltered });
   }
@@ -111,7 +113,7 @@ class Dashboard extends Component<any, any> {
 
         <FoodsContainer data-testid="foods-list">
           {foods &&
-            foods.map((food:any) => (
+            foods.map((food:FoodType) => (
               <Food
                 key={food.id}
                 food={food}
