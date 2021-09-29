@@ -1,56 +1,49 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 
-import Header from '../../components/Header';
+import { Header } from '../../components/Header';
 import api from '../../services/api';
-import Food from '../../components/Food';
-import ModalAddFood from '../../components/ModalAddFood';
-import ModalEditFood from '../../components/ModalEditFood';
+import { Food } from '../../components/Food';
+import { ModalAddFood } from '../../components/ModalAddFood';
+import { ModalEditFood } from '../../components/ModalEditFood';
 import { FoodsContainer } from './styles';
+import { FoodType } from '../../@types';
 
-type FoodType = {
-  id?: number,
-  name: string,
-  description: string,
-  price: number,
-  available: boolean,
-  image: string
-  }
 
-class Dashboard extends Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      foods: [],
-      editingFood: {},
-      modalOpen: false,
-      editModalOpen: false,
+export function Dashboard() {
+
+  const [foods, setFoods] = useState<FoodType[]>([]);
+  const [editingFood, setEditingFood] = useState<FoodType>({} as FoodType);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchFoods() {
+      try {
+        const fetchedFoods = await api.get('/foods');
+        setFoods(fetchedFoods.data);
+      }
+      catch (err) {
+        console.log(err);
+      }
     }
-  }
 
-  async componentDidMount() {
-    const response = await api.get('/foods');
+    fetchFoods();
+  }, [])
 
-    this.setState({ foods: response.data });
-  }
-
-  handleAddFood = async (food: FoodType) => {
-    const { foods } = this.state;
-
+  async function handleAddFood(food: FoodType) {
     try {
-      const response = await api.post('/foods', {
+      const { data: foodReturned } = await api.post('/foods', {
         ...food,
         available: true,
       });
 
-      this.setState({ foods: [...foods, response.data] });
+      setFoods([...foods, foodReturned.data]);
     } catch (err) {
       console.log(err);
     }
   }
 
-  handleUpdateFood = async (food: FoodType) => {
-    const { foods, editingFood } = this.state;
-
+  async function handleUpdateFood(food: FoodType) {
     try {
       const foodUpdated = await api.put(
         `/foods/${editingFood.id}`,
@@ -61,70 +54,62 @@ class Dashboard extends Component<any, any> {
         f.id !== foodUpdated.data.id ? f : foodUpdated.data,
       );
 
-      this.setState({ foods: foodsUpdated });
+      setFoods(foodsUpdated);
     } catch (err) {
       console.log(err);
     }
   }
 
-  handleDeleteFood = async (id: number) => {
-    const { foods } = this.state;
+  async function handleDeleteFood(id: number) {
 
     await api.delete(`/foods/${id}`);
 
     const foodsFiltered = foods.filter((food: FoodType) => food.id !== id);
 
-    this.setState({ foods: foodsFiltered });
+    setFoods(foodsFiltered);
   }
 
-  toggleModal = () => {
-    const { modalOpen } = this.state;
-
-    this.setState({ modalOpen: !modalOpen });
+  function toggleModal() {
+    setModalOpen(!modalOpen);
   }
 
-  toggleEditModal = () => {
-    const { editModalOpen } = this.state;
-
-    this.setState({ editModalOpen: !editModalOpen });
+  function toggleEditModal() {
+    setEditModalOpen(!editModalOpen);
   }
 
-  handleEditFood = (food: any) => {
-    this.setState({ editingFood: food, editModalOpen: true });
+  function handleEditFood(food: any) {
+    setEditingFood(food);
+    setEditModalOpen(true);
   }
 
-  render() {
-    const { modalOpen, editModalOpen, editingFood, foods } = this.state;
+  return (
+    <>
+      <Header openModal={toggleModal} />
+      <ModalAddFood
+        isOpen={modalOpen}
+        setIsOpen={toggleModal}
+        handleAddFood={handleAddFood}
+      />
+      <ModalEditFood
+        isOpen={editModalOpen}
+        setIsOpen={toggleEditModal}
+        editingFood={editingFood}
+        handleUpdateFood={handleUpdateFood}
+      />
 
-    return (
-      <>
-        <Header openModal={this.toggleModal} />
-        <ModalAddFood
-          isOpen={modalOpen}
-          setIsOpen={this.toggleModal}
-          handleAddFood={this.handleAddFood}
-        />
-        <ModalEditFood
-          isOpen={editModalOpen}
-          setIsOpen={this.toggleEditModal}
-          editingFood={editingFood}
-          handleUpdateFood={this.handleUpdateFood}
-        />
-
-        <FoodsContainer data-testid="foods-list">
-          {foods &&
-            foods.map((food:FoodType) => (
-              <Food
-                key={food.id}
-                food={food}
-                handleDelete={this.handleDeleteFood}
-                handleEditFood={this.handleEditFood}
-              />
-            ))}
-        </FoodsContainer>
-      </>
-    );
-  }
+      <FoodsContainer data-testid="foods-list">
+        {foods &&
+          foods.map((food: FoodType) => (
+            <Food
+              key={food.id}
+              food={food}
+              handleDelete={handleDeleteFood}
+              handleEditFood={handleEditFood}
+            />
+          ))}
+      </FoodsContainer>
+    </>
+  );
 };
 
 export default Dashboard;
