@@ -19,7 +19,7 @@ export function Dashboard() {
   useEffect(() => {
     async function fetchFoods() {
       try {
-        const fetchedFoods = await api.get('/foods');
+        const fetchedFoods = await api.get<FoodType[]>('/foods');
         setFoods(fetchedFoods.data);
       }
       catch (err) {
@@ -77,7 +77,7 @@ export function Dashboard() {
     setEditModalOpen(!editModalOpen);
   }
 
-  function handleEditFood(food: any) {
+  function handleEditFood(food: FoodType) {
     setEditingFood(food);
     setEditModalOpen(true);
   }

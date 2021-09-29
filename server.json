@@ -23,6 +23,30 @@
       "description": "Macarrão com pimentão, brócolis e ervilhas tailandesas.",
       "available": true,
       "id": 4
+    },
+    {
+      "image": "https://storage.googleapis.com/golden-wind/bootcamp-gostack/desafio-food/food2.png",
+      "name": "Food",
+      "price": "21.90",
+      "description": "Comida nova",
+      "available": true,
+      "id": 5
+    },
+    {
+      "image": "",
+      "name": "",
+      "price": "",
+      "description": "",
+      "available": true,
+      "id": 6
+    },
+    {
+      "image": "",
+      "name": "",
+      "price": "",
+      "description": "",
+      "available": true,
+      "id": 7
     }
   ]
 }
